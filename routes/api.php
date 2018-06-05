@@ -16,3 +16,11 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::group(['prefix'=>'curd'],function(){
+    Route::get('{model}','CURDController@getList');
+    Route::get('{model}/{id}','CURDController@getById');
+    Route::post('{model}','CURDController@create');
+    Route::put('{model}','CURDController@update');
+    Route::delete('{model}','CURDController@delete');
+});

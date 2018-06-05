@@ -69,4 +69,20 @@ class CURDController extends Controller
         ];
         return new JsonResponse($response);
     }
+
+    public function create($modelName)
+    {
+        dd(__METHOD__);
+    }
+
+    public function update($modelName)
+    {
+        dd(__METHOD__);
+    }
+
+    public function delete($modelName)
+    {
+        dd(__METHOD__);
+    }
+
 }
