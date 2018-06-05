@@ -11,5 +11,5 @@ namespace App\Exceptions;
 
 class RequestException extends \Exception
 {
-
+    protected $code = 400;
 }

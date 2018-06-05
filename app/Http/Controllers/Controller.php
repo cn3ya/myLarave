@@ -24,6 +24,7 @@ class Controller extends BaseController
     public function __construct(Request $request)
     {
         $this->request = $request;
+        $this->middleware('validator');
         $this->middleware('debugBar');
     }
 }

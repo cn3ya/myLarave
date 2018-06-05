@@ -61,5 +61,6 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'debugBar' => \App\Http\Middleware\DebugBar::class,
         'test' => \App\Http\Middleware\Test::class,
+        'validator' => \App\Http\Middleware\Validator::class,
     ];
 }
