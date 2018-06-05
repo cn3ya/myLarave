@@ -11,23 +11,17 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class DebugBar
 {
     public function handle($request, Closure $next, $guard = null)
     {
         $response = $next($request);
-
-        if (
-            $response instanceof JsonResponse &&
-            app()->bound('debugbar') &&
-            app('debugbar')->isEnabled() &&
-            is_object($response->getData())
+        if ($response instanceof JsonResponse && (env('APP_DEBUG') || $request->input('debug'))
         ) {
             $debugData = app('debugbar')->getData();
-            $debugData['request_parameter'] = app(Request::class)->input();
-            $debugData['cookie'] = app(Request::class)->cookie();
+            $debugData['request_parameter'] = $request->input();
+            $debugData['cookie'] = $request->cookie();
             $response->setData($response->getData(true) + ['_debugbar' => $debugData]);
         }
 
