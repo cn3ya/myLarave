@@ -9,11 +9,12 @@
 namespace App\Http\Controllers;
 
 
-use App\Models\Employees;
+use App\Models\Employee;
+use Illuminate\Http\JsonResponse;
 
 class CURDController extends Controller
 {
     public function getList($model) {
-        dd(Employees::find(10006));
+        return new JsonResponse(Employee::find(110085));
     }
 }
