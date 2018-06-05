@@ -18,3 +18,4 @@ Route::get('/', function () {
 Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
 
 Route::get('{model}','CURDController@getList');
+Route::get('{model}/{id}','CURDController@getById');

@@ -9,12 +9,64 @@
 namespace App\Http\Controllers;
 
 
-use App\Models\Employee;
+use App\Exceptions\RequestException;
+use App\Lib\ResponseFormat;
 use Illuminate\Http\JsonResponse;
 
 class CURDController extends Controller
 {
-    public function getList($model) {
-        return new JsonResponse(Employee::find(110085));
+    /**
+     * @param $modelName
+     * @return \Illuminate\Foundation\Application|mixed
+     * @throws RequestException
+     */
+    private function getModel($modelName)
+    {
+        $modelClassString = 'App\Models\\'.ucfirst($modelName);
+        if(!class_exists($modelClassString)) {
+            throw new RequestException('不存在模型:'.$modelClassString);
+        }
+        return app($modelClassString);
+    }
+
+    /**
+     * @param $model
+     * @return JsonResponse
+     * @throws RequestException
+     */
+    public function getList($modelName)
+    {
+        $model = $this->getModel($modelName);
+        $rawPerPage = $this->request->input('perPage');
+        $perPage= $rawPerPage ? $rawPerPage : 20;
+        $page = $this->request->input('page',1);
+        $paginator = $model::paginate($perPage,['*'],'page',$page);
+        !$rawPerPage || $paginator->appends('perPage',$perPage);
+        $response = new ResponseFormat();
+        $response->data = $paginator->items();
+        $response->meta = [
+            'type' => 'list',
+            'perPage' => $perPage,
+            'page' => $page,
+            'next_page' => $paginator->nextPageUrl()
+        ];
+        return new JsonResponse($response);
+    }
+
+    /**
+     * @param $modelName
+     * @param $id
+     * @return JsonResponse
+     * @throws RequestException
+     */
+    public function getById($modelName, $id)
+    {
+        $model = $this->getModel($modelName);
+        $response = new ResponseFormat();
+        $response->data = $model::find($id);
+        $response->meta = [
+            'type' => 'object'
+        ];
+        return new JsonResponse($response);
     }
 }
