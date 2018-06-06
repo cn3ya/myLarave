@@ -17,13 +17,18 @@ class Validator
     {
         $action = $request->route()->getActionName();
         $originCallable = explode('@',$action);
-        $class = app(str_replace('Controllers','ControllerValidators',$originCallable[0]).'Validator');
         $method = $originCallable[1].'Validator';
-        $callable = [$class,$method];
+        $validatorClassName = str_replace('Controllers','ControllerValidators',$originCallable[0]).'Validator';
+        if(class_exists($validatorClassName)) {
+            $class = app(str_replace('Controllers','ControllerValidators',$originCallable[0]).'Validator');
+            $callable = [$class,$method];
+        }else{
+            $callable = [];
+        }
         if(is_callable($callable)){
             call_user_func($callable);
         }else{
-            \Debugbar::addMessage('', 'mylabel');
+            \Debugbar::addMessage('No exist Validator: '.$validatorClassName.'@'.$method);
         }
         return $next($request);
     }

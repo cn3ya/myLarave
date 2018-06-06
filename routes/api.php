@@ -24,3 +24,5 @@ Route::group(['prefix'=>'curd'],function(){
     Route::put('{model}','CURDController@update');
     Route::delete('{model}','CURDController@delete');
 });
+
+Route::get('test','TestController@test');

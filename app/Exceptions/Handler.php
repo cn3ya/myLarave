@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use App\Lib\ResponseFormat;
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\JsonResponse;
 
 class Handler extends ExceptionHandler
 {
@@ -49,10 +50,18 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $exception)
     {
         if ($exception instanceof RequestException) {
-            $response = new ResponseFormat();
-            $response->code = $exception->getCode();
-            $response->msg = $exception->getMessage();
-            return response()->json($response);
+            $responseFormat = new ResponseFormat();
+            $responseFormat->code = $exception->getCode();
+            $responseFormat->msg = $exception->getMessage();
+            $response = new JsonResponse($responseFormat);
+            if ((env('APP_DEBUG') || $request->input('debug'))
+            ) {
+                $debugData = app('debugbar')->getData();
+                $debugData['request_parameter'] = $request->input();
+                $debugData['cookie'] = $request->cookie();
+                $response->setData($response->getData(true) + ['_debugbar' => $debugData]);
+            }
+            return $response;
         }
 
         return parent::render($request, $exception);
