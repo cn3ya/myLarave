@@ -9,6 +9,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Events\TestEvent;
 use App\Exceptions\RequestException;
 use App\Lib\ResponseFormat;
 use Illuminate\Http\JsonResponse;
@@ -26,6 +27,7 @@ class CURDController extends Controller
         if(!class_exists($modelClassString)) {
             throw new RequestException('不存在模型:'.$modelClassString);
         }
+        event(new TestEvent());
         return app($modelClassString);
     }
 

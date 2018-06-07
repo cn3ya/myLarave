@@ -18,6 +18,6 @@ class CURDControllerValidator extends RequestValidator
      */
     public function getListValidator()
     {
-        throw new RequestException('托尔斯泰');
+//        throw new RequestException('托尔斯泰');
     }
 }
