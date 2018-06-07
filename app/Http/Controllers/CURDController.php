@@ -12,13 +12,14 @@ namespace App\Http\Controllers;
 use App\Events\TestEvent;
 use App\Exceptions\RequestException;
 use App\Lib\ResponseFormat;
+use App\Models\Model;
 use Illuminate\Http\JsonResponse;
 
 class CURDController extends Controller
 {
     /**
      * @param $modelName
-     * @return \Illuminate\Foundation\Application|mixed
+     * @return Model
      * @throws RequestException
      */
     private function getModel($modelName)
@@ -27,12 +28,11 @@ class CURDController extends Controller
         if(!class_exists($modelClassString)) {
             throw new RequestException('不存在模型:'.$modelClassString);
         }
-        event(new TestEvent());
         return app($modelClassString);
     }
 
     /**
-     * @param $model
+     * @param $modelName
      * @return JsonResponse
      * @throws RequestException
      */
@@ -42,7 +42,7 @@ class CURDController extends Controller
         $rawPerPage = $this->request->input('perPage');
         $perPage= $rawPerPage ? $rawPerPage : 20;
         $page = $this->request->input('page',1);
-        $paginator = $model::paginate($perPage,['*'],'page',$page);
+        $paginator = $model->paginate($perPage,['*'],'page',$page);
         !$rawPerPage || $paginator->appends('perPage',$perPage);
         $response = new ResponseFormat();
         $response->data = $paginator->items();
@@ -65,16 +65,30 @@ class CURDController extends Controller
     {
         $model = $this->getModel($modelName);
         $response = new ResponseFormat();
-        $response->data = $model::find($id);
+        $response->data = $model->find($id);
         $response->meta = [
             'type' => 'object'
         ];
         return new JsonResponse($response);
     }
 
+    /**
+     * @param $modelName
+     * @return JsonResponse
+     * @throws RequestException
+     * @throws \Throwable
+     */
     public function create($modelName)
     {
-        dd(__METHOD__);
+        $model = $this->getModel($modelName);
+        $exist = $model->find($this->request->input($model->getPrimaryKey()));
+        if($exist) {
+            throw new RequestException('记录已存在');
+        }
+        $model->fill($this->request->input());
+        $model::saveWithTransaction($model);
+        $response = new ResponseFormat();
+        return new JsonResponse($response);
     }
 
     public function update($modelName)

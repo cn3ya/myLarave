@@ -15,6 +15,8 @@ class Employee extends Model
 
     protected $primaryKey = 'emp_no';
 
+    protected $fillable = ['emp_no','birth_date','first_name','last_name','gender','hire_date'];
+
     function salary()
     {
         return $this->hasMany(Salary::class,'emp_no','emp_no');
