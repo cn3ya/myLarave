@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Lib\ValueObject;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
@@ -18,12 +19,18 @@ class Controller extends BaseController
     protected $request;
 
     /**
+     * @var ValueObject
+     */
+    protected $input;
+
+    /**
      * Controller constructor.
      * @param Request $request
      */
     public function __construct(Request $request)
     {
         $this->request = $request;
+        $this->input = new ValueObject(array_merge($request->input(),$request->cookie()));
         $this->middleware('validator');
         $this->middleware('debugBar');
     }

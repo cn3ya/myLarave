@@ -91,14 +91,45 @@ class CURDController extends Controller
         return new JsonResponse($response);
     }
 
+    /**
+     * @param $modelName
+     * @return JsonResponse
+     * @throws RequestException
+     * @throws \Throwable
+     */
     public function update($modelName)
     {
-        dd(__METHOD__);
+        $model = $this->getModel($modelName);
+        $primaryKey = $model->getPrimaryKey();
+        $primaryKeyValue = $this->request->input($primaryKey);
+        $item = $model->find($primaryKeyValue);
+        if(!$item) {
+            throw new RequestException("不存在记录{$primaryKey}={$primaryKeyValue}");
+        }
+        $item->fill($this->request->input());
+        $model::saveWithTransaction($item);
+        $response = new ResponseFormat();
+        return new JsonResponse($response);
     }
 
+    /**
+     * @param $modelName
+     * @return JsonResponse
+     * @throws RequestException
+     * @throws \Throwable
+     */
     public function delete($modelName)
     {
-        dd(__METHOD__);
+        $model = $this->getModel($modelName);
+        $primaryKey = $model->getPrimaryKey();
+        $primaryKeyValue = $this->request->input($primaryKey);
+        $item = $model->find($primaryKeyValue);
+        if(!$item) {
+            throw new RequestException("不存在记录{$primaryKey}={$primaryKeyValue}");
+        }
+        $item->delete();
+        $response = new ResponseFormat();
+        return new JsonResponse($response);
     }
 
 }
