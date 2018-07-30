@@ -9,7 +9,6 @@
 namespace App\Http\Controllers;
 
 
-use App\Events\TestEvent;
 use App\Exceptions\RequestException;
 use App\Lib\ResponseFormat;
 use App\Models\Model;
@@ -65,7 +64,7 @@ class CURDController extends Controller
     {
         $model = $this->getModel($modelName);
         $response = new ResponseFormat();
-        $response->data = $model->find($id);
+        $response->data = $model::getByIdUsingCache($id);
         $response->meta = [
             'type' => 'object'
         ];

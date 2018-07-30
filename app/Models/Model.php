@@ -9,6 +9,7 @@
 namespace App\Models;
 
 use \Illuminate\Database\Eloquent\Model as BaseModel;
+use Illuminate\Support\Facades\Cache;
 
 class Model extends BaseModel
 {
@@ -37,6 +38,27 @@ class Model extends BaseModel
         static::transaction(function()use($model){
             $model->save();
         });
+    }
+
+    /**
+     * @param $id
+     * @return Model|mixed
+     */
+    static function getByIdUsingCache($id)
+    {
+        $model = new static();
+        $key = "{$model->table}:{$id}";
+        if(Cache::has($key)) {
+            $data = Cache::pull($key);
+            \Debugbar::addMessage("hint cache key={$key}");
+        }else{
+            $data = $model->find($id);
+            \Debugbar::addMessage("miss cache key={$key}");
+        }
+        Cache::remember($key,1,function ()use($data){
+            return $data;
+        });
+        return $data;
     }
 
     public function getPrimaryKey()
