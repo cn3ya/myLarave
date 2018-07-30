@@ -18,4 +18,14 @@ class ResponseFormat
     public $data=null;
 
     public $meta=null;
+
+    /**
+     * ResponseFormat constructor.
+     * @param null $data
+     */
+    public function __construct($data=null)
+    {
+        $this->data = $data;
+    }
+
 }

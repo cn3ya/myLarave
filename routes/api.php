@@ -25,4 +25,10 @@ Route::group(['prefix'=>'curd'],function(){
     Route::delete('{model}','CURDController@delete');
 });
 
+Route::group(['prefix'=>'redis'],function(){
+    Route::get('string/{model}','RedisController@getString');
+    Route::get('hash/{model}','RedisController@getHashAll');
+    Route::get('hash/{model}/{id}','RedisController@getHashById');
+});
+
 Route::get('test','TestController@test');
