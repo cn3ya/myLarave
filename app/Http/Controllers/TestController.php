@@ -15,6 +15,7 @@ class TestController extends Controller
 {
     public function test()
     {
-        return new JsonResponse(['test']);
+        session(['test'=>'abc']);
+        return new JsonResponse($this->request->session()->all());
     }
 }
