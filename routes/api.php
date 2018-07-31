@@ -32,3 +32,4 @@ Route::group(['prefix'=>'redis'],function(){
 });
 
 Route::get('test','TestController@test');
+Route::get('test_action','TestController@test_action');

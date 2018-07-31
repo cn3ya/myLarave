@@ -8,12 +8,18 @@
 
 namespace App\Models;
 
+use App\Events\Model\RetrievedEvent;
 use \Illuminate\Database\Eloquent\Model as BaseModel;
 use Illuminate\Support\Facades\Cache;
 
 class Model extends BaseModel
 {
     public $timestamps = false;
+
+    protected $dispatchesEvents = [
+        'retrieved' => RetrievedEvent::class
+    ];
+
     /**
      * @param \Closure $closure
      * @throws \Throwable
@@ -65,4 +71,6 @@ class Model extends BaseModel
     {
         return $this->primaryKey;
     }
+
+
 }

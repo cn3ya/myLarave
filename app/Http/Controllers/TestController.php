@@ -9,6 +9,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Http\Actions\TestAction;
 use Illuminate\Http\JsonResponse;
 
 class TestController extends Controller
@@ -17,5 +18,11 @@ class TestController extends Controller
     {
         session(['test'=>'abc']);
         return new JsonResponse($this->request->session()->all());
+    }
+
+    public function test_action()
+    {
+        $action = new TestAction();
+        $action->test();
     }
 }
