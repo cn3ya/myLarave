@@ -24,6 +24,11 @@ class ValueObject
     static function getInstanceByJSON($json)
     {
         $object = json_decode($json);
+        return static::getInstanceFromObject($object);
+    }
+
+    static function getInstanceFromObject($object)
+    {
         $originSerial = serialize($object);
         $className = static::class;
         $classNameLength = strlen($className);
