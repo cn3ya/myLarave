@@ -13,24 +13,36 @@ use App\Exceptions\RequestException;
 
 class ValueObject
 {
-    private $data = [];
+    protected function __construct() {}
 
-    /**
-     * ValueObject constructor.
-     * @param array $data
-     */
-    public function __construct(array $data)
+    static function getInstanceByArray(array $data)
     {
-        $this->data = $data;
+        $json = json_encode($data);
+        return static::getInstanceByJSON($json);
+    }
+
+    static function getInstanceByJSON($json)
+    {
+        $object = json_decode($json);
+        $originSerial = serialize($object);
+        $className = static::class;
+        $classNameLength = strlen($className);
+        $finalSerial = str_replace('O:8:"stdClass":',"O:{$classNameLength}:\"{$className}\":",$originSerial);
+        return unserialize($finalSerial);
     }
 
     public function get($key,$default=null)
     {
-        if(array_key_exists($key,$this->data)) {
-            return $this->data[$key];
-        }else{
-            return $default;
+        $data = $this;
+        foreach (explode('.', $key) as $segment) {
+            if (property_exists($data, $segment)) {
+                $data = $data->{$segment};
+            } else {
+                return value($default);
+            }
         }
+
+        return $data;
     }
 
     /**
@@ -40,16 +52,18 @@ class ValueObject
      */
     public function mustGet($key)
     {
-        if(array_key_exists($key,$this->data)) {
-            return $this->data[$key];
-        }else{
-            throw new RequestException("{$key}不能为空");
+        $data = $this;
+        $usedKey = [];
+        foreach (explode('.', $key) as $segment) {
+            $usedKey[] = $segment;
+            if (property_exists($data, $segment)) {
+                $data = $data->{$segment};
+            } else {
+                $currentKey = implode('.',$usedKey);
+                throw new RequestException("{$currentKey}不能为空");
+            }
         }
-    }
-
-    public function all()
-    {
-        return $this->data;
+        return $data;
     }
 
 }
