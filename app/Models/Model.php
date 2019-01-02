@@ -93,4 +93,12 @@ class Model extends BaseModel
         return $value;
     }
 
+    protected function asJson($value)
+    {
+        return json_encode(
+            $value,
+            JSON_UNESCAPED_UNICODE
+            | JSON_UNESCAPED_SLASHES
+        );
+    }
 }
