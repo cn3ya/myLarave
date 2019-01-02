@@ -24,7 +24,11 @@ class ValueObject
     static function getInstanceByJSON($json)
     {
         $object = json_decode($json);
-        return static::getInstanceFromObject($object);
+        if ($object) {
+            return static::getInstanceFromObject($object);
+        } else {
+            return new static();
+        }
     }
 
     static function getInstanceFromObject($object)
@@ -78,6 +82,11 @@ class ValueObject
         foreach ($data as $key => $value) {
             !property_exists($this, $key) && $this->{$key} = $value;
         }
+    }
+
+    public function toArray()
+    {
+        return (array) $this;
     }
 
 }

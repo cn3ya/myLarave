@@ -85,7 +85,7 @@ class CURDController extends Controller
         if($exist) {
             throw new RequestException('记录已存在');
         }
-        $model->fill($this->request->input());
+        $model->fill($this->input->toArray());
         $model::saveWithTransaction($model);
         $response = new ResponseFormat();
         return new JsonResponse($response);
