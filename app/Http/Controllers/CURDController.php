@@ -63,7 +63,7 @@ class CURDController extends Controller
     public function getById($modelName, $id)
     {
         $model = $this->getModel($modelName);
-        dd($model->getDispatchesEvents());
+//        dd($model->getDispatchesEvents());
         $response = new ResponseFormat();
         $response->data = $model::getByIdUsingCache($id);
         $response->meta = [

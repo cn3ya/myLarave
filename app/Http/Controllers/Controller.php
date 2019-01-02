@@ -30,7 +30,12 @@ class Controller extends BaseController
     public function __construct(Request $request)
     {
         $this->request = $request;
-        $this->input = new ValueObject(array_merge($request->input(),$request->cookie()));
+        if ($request->getMethod() === 'POST') {
+            $this->input = ValueObject::getInstanceByJSON($request->getContent());
+        } else {
+            $this->input = ValueObject::getInstanceByJSON('{}');
+        }
+        $this->input->addExtraArray($request->query());
         $this->middleware('validator');
         $this->middleware('debugBar');
     }

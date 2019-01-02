@@ -32,7 +32,10 @@ class ValueObject
         $originSerial = serialize($object);
         $className = static::class;
         $classNameLength = strlen($className);
-        $finalSerial = str_replace('O:8:"stdClass":',"O:{$classNameLength}:\"{$className}\":",$originSerial);
+        $finalSerial = str_replace(
+            'O:8:"stdClass":',
+            "O:{$classNameLength}:\"{$className}\":",$originSerial
+        );
         return unserialize($finalSerial);
     }
 
@@ -69,6 +72,12 @@ class ValueObject
             }
         }
         return $data;
+    }
+
+    public function addExtraArray(array $data) {
+        foreach ($data as $key => $value) {
+            !property_exists($this, $key) && $this->{$key} = $value;
+        }
     }
 
 }

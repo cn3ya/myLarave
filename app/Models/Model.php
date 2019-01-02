@@ -9,6 +9,7 @@
 namespace App\Models;
 
 use App\Events\Model\RetrievedEvent;
+use App\Lib\ValueObject;
 use \Illuminate\Database\Eloquent\Model as BaseModel;
 use Illuminate\Support\Facades\Cache;
 
@@ -21,14 +22,25 @@ class Model extends BaseModel
     ];
 
     /**
+     * 使得所有field都可以fill
+     * @var array
+     */
+    protected $guarded = [];
+
+    /**
      * @param \Closure $closure
+     * @param null $point
      * @throws \Throwable
      */
-    static function transaction(\Closure $closure) {
+    static function transaction(\Closure $closure, $point = null) {
         $db = app('db');
         try {
             $db->beginTransaction();
-            $closure->call(app());
+            if ($point) {
+                $closure->call($point);
+            } else {
+                $closure->call(app());
+            }
             $db->commit();
         }catch (\Throwable $throwable){
             $db->rollBack();
@@ -72,5 +84,13 @@ class Model extends BaseModel
         return $this->primaryKey;
     }
 
+    public function getAttribute($key)
+    {
+        $value = parent::getAttribute($key);
+        if ($value instanceof \stdClass) {
+            $value = ValueObject::getInstanceFromObject($value);
+        }
+        return $value;
+    }
 
 }
